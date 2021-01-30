@@ -9,7 +9,6 @@
 #include <vector>
 using namespace std;
 int n;
-int gd;
 vector<int> grade;
 int main(void) {
     cin >> n;
