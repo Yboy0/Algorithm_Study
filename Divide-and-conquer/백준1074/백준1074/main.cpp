@@ -9,28 +9,28 @@
 #include <cmath>
 using namespace std;
 int n,r,c,cnt;
-void order(int y,int x,int siz){
-    if(siz == 2){
-        if(r>=y && r<=y+siz && c>=x && c<=x+siz){
-            if(c>x){
-                cnt++;
-            }
-            if(r>y){
-                cnt+=2;
-            }
-            printf("%d",cnt) ;
-            return;
+void order(int y,int x,int size){
+    if(size == 1){
+        printf("%d",cnt) ;
+        return;
+        }
+    else{
+        int dv = size/2;
+        if(r>=y && r<y+dv && c>=x && c<x+dv){
+            order(y,x,dv);
+        }
+        else if(r>=y && r<y+dv && c>=x+dv && c<x+size){
+            cnt+=dv*dv;
+            order(y,x+dv,dv);
+        }
+        else if(r>=y+dv && r<y+size && c>=x && c<x+dv){
+            cnt+=2*dv*dv;
+            order(y+dv,x,dv);
         }
         else{
-            cnt+=siz*siz;
+            cnt+=3*dv*dv;
+            order(y+dv,x+dv,dv);
         }
-    }
-    else{
-        int dv = siz/2;
-        order(y,x,dv);
-        order(y,x+dv,dv);
-        order(y+dv,x,dv);
-        order(y+dv,x+dv,dv);
     }
 }
 
