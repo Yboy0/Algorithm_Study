@@ -38,11 +38,8 @@ int main(void) {
             component(i);
             cnt++;
         }
-       
     }
     cout << cnt;
    
-    
-    
     return 0;
 }
