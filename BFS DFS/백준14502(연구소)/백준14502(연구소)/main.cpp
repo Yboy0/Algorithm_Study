@@ -25,13 +25,10 @@ bool checkVV[10][10];
 int cnt;
 vector<Coord>v;
 vector<int> v1;
-vector<Coord>v2;
 
 bool compare(int a, int b){
     return a>b;
 }
-
-
 
 void safeZone(int y, int x){
     check[y][x]=true;
@@ -117,7 +114,7 @@ int main(void) {
                         }
                     }
                 }
-//                cout << cnt << " ";
+
                 v1.push_back(cnt);
                 cnt=0;
                 arr[v[i].y][v[i].x]=0;

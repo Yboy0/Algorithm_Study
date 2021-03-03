@@ -7,50 +7,70 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <algorithm>
 using namespace std;
 
+struct Coord{
+    int y;
+    int x;
+    int cnt;
+};
 
 int n,m; //n:y, m:x
 string num;
 int check[200][200];
 //int cnt;
 vector<int>v;
+queue<Coord>q;
+int a,b,c;
 
 bool compare(int a, int b){
     return a<b;
 }
 
-void maze(int y, int x,int cnt){
-
-    if(y==n && x==m){
+void maze(){
+    
+    a=q.front().y;
+    b=q.front().x;
+    c=q.front().cnt;
+    
+    if(a==n && b==m){
 //        cout << cnt << endl;
-        v.push_back(cnt);
+        v.push_back(c);
     }
     else{
-        if(x+1<=m && check[y][x+1]==1){
-            check[y][x+1]++;
-            maze(y,x+1,cnt+1);
-            check[y][x+1]--;
+        if(b+1<=m && check[a][b+1]==1){
+            check[a][b+1]++;
+            Coord coord = {a,b+1,c+1};
+            q.push(coord);
+         
                       
         }
-        if(y+1<=n && check[y+1][x]==1){
-            check[y+1][x]++;
-            maze(y+1,x,cnt+1);
-            check[y+1][x]--;
+        if(a+1<=n && check[a+1][b]==1){
+            check[a+1][b]++;
+            Coord coord = {a+1,b,c+1};
+            q.push(coord);
+        
+           
         }
-        if(y-1>0 && check[y-1][x]==1){
-            check[y-1][x]++;
-            maze(y-1,x,cnt+1);
-            check[y-1][x]--;
+        if(a-1>0 && check[a-1][b]==1){
+            check[a-1][b]++;
+            Coord coord = {a-1,b,c+1};
+            q.push(coord);
+         
+           
         }
-        if(x-1>0 && check[y][x-1]==1){
-            check[y][x-1]++;
-            maze(y,x-1,cnt+1);
-            check[y][x-1]--;
+        if(b-1>0 && check[a][b-1]==1){
+            check[a][b-1]++;
+            Coord coord = {a,b-1,c+1};
+            q.push(coord);
+                    
         }
 
     }
+    q.pop();
+
 }
 
 
@@ -67,7 +87,13 @@ int main(void) {
             }
         }
     }
-    maze(1,1,1);
+    Coord coord={1,1,1};
+    q.push(coord);
+    
+    while(!q.empty()){
+        maze();
+    }
+
     sort(v.begin(),v.end(),compare);
     printf("%d",v[0]);
     
