@@ -20,7 +20,6 @@ struct Coord{
 int n,m; //n:y, m:x
 string num;
 int check[200][200];
-//int cnt;
 vector<int>v;
 queue<Coord>q;
 int a,b,c;
@@ -36,7 +35,6 @@ void maze(){
     c=q.front().cnt;
     
     if(a==n && b==m){
-//        cout << cnt << endl;
         v.push_back(c);
     }
     else{
@@ -44,22 +42,19 @@ void maze(){
             check[a][b+1]++;
             Coord coord = {a,b+1,c+1};
             q.push(coord);
-         
                       
         }
         if(a+1<=n && check[a+1][b]==1){
             check[a+1][b]++;
             Coord coord = {a+1,b,c+1};
             q.push(coord);
-        
-           
+                   
         }
         if(a-1>0 && check[a-1][b]==1){
             check[a-1][b]++;
             Coord coord = {a-1,b,c+1};
             q.push(coord);
-         
-           
+                    
         }
         if(b-1>0 && check[a][b-1]==1){
             check[a][b-1]++;
