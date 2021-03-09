@@ -15,122 +15,77 @@ using namespace std;
 //최단경로
 //벽뿌시는거 고려-> 한개 까지만 뿌실 수 있다
 
-bool compare(int a, int b){
-    return a<b;
-}
+queue<pair<pair<int, int>, int>> loc;
 
-struct Coord{
-    int y;
-    int x;
-    int cnt;
-};
-
-int n,m; //n:y, m:x
-string num;
-int check[1001][1001];
-bool checkk[1001][1001][2];
-queue<Coord>q;
-int a,b,c;
-bool chk;
-vector<int>v;
-bool ch;
-bool cho;
-
-int block(){
- while(!q.empty()){
-    a=q.front().y;
-    b=q.front().x;
-    c=q.front().cnt;
-    if(a==n-1 && b==m-1){
-        return c;
-    }
+int n,m;
+int num;
+int arr[1001][1001];
+int check[1001][1001][2];
+int cnt;
+bool finish;
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+void Move(){
     
-    if(a+1<n){
-        if(check[a+1][b]==0 && checkk[a+1][b][0]==false){
-            checkk[a+1][b][0]=true;
-            Coord coord = {a+1,b,c+1};
-            q.push(coord);
-        }
-        else if(check[a+1][b]==1 && checkk[a+1][b][1]==false && cho==false){
-            checkk[a+1][b][1]=true;
-            ch=true;
-            Coord coord = {a+1,b,c+1};
-            q.push(coord);
+    loc.push(make_pair(make_pair(1, 1), 0));
+    cnt ++;
+    
+    while(!loc.empty()){
+        
+        unsigned long lsize = loc.size();
+        
+        for(unsigned i=0; i<lsize; i++){
+            int fx = loc.front().first.first;
+            int fy = loc.front().first.second;
+            int ch = loc.front().second;
             
-        }
-      
-    }
-    if(a-1>=0){
-        if(check[a-1][b]==0 && checkk[a-1][b][0]==false){
-            checkk[a-1][b][0]=true;
-            Coord coord = {a-1,b,c+1};
-            q.push(coord);
-        }
-        else if(check[a-1][b]==1 && checkk[a-1][b][1]==false && cho==false){
-            checkk[a-1][b][1]=true;
-            ch=true;
-            Coord coord = {a-1,b,c+1};
-            q.push(coord);
+            loc.pop();
             
+            if(fx == n && fy == m){
+                finish = true;
+                return;
+            }
+            for(int j=0; j<4; j++){
+                int nx = fx + dx[j];
+                int ny = fy + dy[j];
+                
+                if(nx>=1 && ny>=1 && nx<=n && ny <= m){
+                    if(arr[nx][ny] ==0 && check[nx][ny][ch] == 0){
+                        
+                        check[nx][ny][ch] = 1;
+                        loc.push(make_pair(make_pair(nx, ny), ch));
+                    }
+                    
+                    if(arr[nx][ny]==1 && ch ==0 && check[nx][ny][ch]){
+                        check[nx][ny][ch] = 1;
+                        loc.push(make_pair(make_pair(nx, ny), 1));
+                    }
+                }
+                
+            }
         }
+        
+        cnt ++;
     }
-    if(b+1<m){
-        if(check[a][b+1]==0 && checkk[a][b+1][0]==false){
-            checkk[a][b+1][0]=true;
-            Coord coord = {a,b+1,c+1};
-            q.push(coord);
-        }
-        else if(check[a][b+1]==1 && checkk[a][b+1][1]==false && cho==false){
-            checkk[a][b+1][1]=true;
-            Coord coord = {a,b+1,c+1};
-            ch=true;
-            q.push(coord);
-            
-        }
-    }
-    if(b-1>=0){
-        if(check[a][b-1]==0 && checkk[a][b-1][0]==false ){
-            checkk[a][b-1][0]=true;
-            Coord coord = {a,b-1,c+1};
-            q.push(coord);
-        }
-        else if(check[a][b-1]==1 && checkk[a][b-1][1]==false && cho==false){
-            checkk[a][b-1][1]=true;
-            Coord coord = {a,b-1,c+1};
-            ch=true;
-            q.push(coord);
-        }
-    }
-
-    q.pop();
-     
-     if(ch==true){
-         cho=true;
-     }
- }
-    return -1;
 }
 
 
 int main(void) {
     cin >> n >>m;
-    for(int i=0;i<n;i++){
-        cin >> num;
-        for(int j=0;j<m;j++){
-            if(num[j]=='0'){
-                check[i][j]=0;
-            }else{
-                check[i][j]=1;
-            }
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=m;j++){
+            scanf("%1d",&num);
+            arr[i][j] = num;
         }
     }
     
-    Coord coord = {0,0,1};
-    checkk[0][0][0]=true;
-    q.push(coord);
-    cout << block();
+    Move();
 
-
-    
+    if(finish){
+        cout << cnt;
+    }
+    else{
+        cout << -1;
+    }
     return 0;
 }
