@@ -18,8 +18,8 @@ using namespace std;
 
 queue<pair<pair<int,int>,int>>q;
 int k,w,h; // h:y w:x
-int arr[250][250];
-int check[250][250];
+int arr[201][201];
+int check[201][201][31];
 //동 서 북 남
 int dx[4]={1,-1,0,0};
 int dy[4]={0,0,1,-1};
@@ -31,7 +31,7 @@ bool finish;
 
 void monkey(){
     q.push(make_pair(make_pair(0, 0), 0));
-    check[0][0]=1;
+    check[0][0][0]=1;
     while(!q.empty()){
         
         unsigned long lsize=q.size();
@@ -42,7 +42,6 @@ void monkey(){
             c=q.front().second; //kcount
             
             q.pop();
-            cout << a << " "<< b<< " "<<c << " "<< cnt<< endl;
             if(a==h-1 && b==w-1){
                 //cout << c <<  " "<< cnt << endl;
                 finish=true;
@@ -54,8 +53,8 @@ void monkey(){
                 ay=a+dy[j];
                 ax=b+dx[j];
                 if(ay>=0 && ax>=0 && ay<h && ax<w){
-                    if(arr[ay][ax]==0 && check[ay][ax]==0){
-                        check[ay][ax]=1;
+                    if(arr[ay][ax]==0 && check[ay][ax][c]==0){
+                        check[ay][ax][c]=1;
                         q.push(make_pair(make_pair(ay, ax),c));
                     }
                     
@@ -95,8 +94,8 @@ void monkey(){
                                      
                                  }
                                 if(kay>=0 && kax>=0 && kay<h && kax<w){
-                                    if(arr[kay][kax]==0 && check[kay][kax]==0){
-                                        check[kay][kax]=1;
+                                    if(arr[kay][kax]==0 && check[kay][kax][c+1]==0){
+                                        check[kay][kax][c+1]=1;
                                         q.push(make_pair(make_pair(kay, kax),c+1));
                                     }
                                 }
