@@ -43,7 +43,6 @@ void monkey(){
             
             q.pop();
             if(a==h-1 && b==w-1){
-                //cout << c <<  " "<< cnt << endl;
                 finish=true;
                 return;
             }
