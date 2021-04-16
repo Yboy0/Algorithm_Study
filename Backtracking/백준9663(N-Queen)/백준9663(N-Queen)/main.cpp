@@ -8,7 +8,6 @@
 #include <iostream>
 using namespace std;
 
-
 int n;
 bool check1[16];
 int check2[16][2];
@@ -26,11 +25,14 @@ void queen(int cnt){
                     for(int j=0; j<cnt; j++){
                         if(i==check2[j][0] || i==check2[j][1]){
                             ch=true;
+                            break;
                         }
 
                     }
                     if(ch==false){
+                        
                         check1[i]=true;
+                        
                         for(int j=0; j<cnt; j++){
                             check2[j][0]--;
                             check2[j][1]++;
@@ -45,6 +47,7 @@ void queen(int cnt){
                             check2[j][0]++;
                             check2[j][1]--;
                         }
+                        
                         check1[i]=false;
                 }
             }
