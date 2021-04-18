@@ -1,2 +1,2 @@
-# Algorithm-Study
+# Algorithm_Study
 ## 알고리즘을 공부하자 
