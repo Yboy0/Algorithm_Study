@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <queue>
-#include <vector>
 using namespace std;
 
 
@@ -23,10 +22,10 @@ struct Move{
     char dir;
 };
 
-//struct snakeBody{
-//    int y;
-//    int x;
-//}
+struct SnakeBody{
+    int y;
+    int x;
+};
 
 
 int n; //보드의 크기
@@ -37,15 +36,12 @@ int arr[102][102]; //보드판
 queue<Move>q;
 int s;
 char d;
-int endT;
-//int dy[2]={1,6};
-//int dx[2]={1,6};
 bool check;
-//vector<snakeBody>v;
+queue<SnakeBody>qq;
+int bodyS;
 
 
 void snake(int second, int yy, int xx, int type){ //yy,xx는 뱀의 머리
-    cout << xx << " " << yy << "\n";
     
     if(xx > n || yy > n || xx < 1 || yy < 1){
         check = true;
@@ -53,57 +49,77 @@ void snake(int second, int yy, int xx, int type){ //yy,xx는 뱀의 머리
         return;
     }
            
-    // 자기 몸에 부딫이는 경우
-    if(arr[yy][xx] == 2){
-        check = true;
-        cout << second;
-        return;
+    // 자기 몸에 부딪히는 경우
+    if(!qq.empty()){
+        bodyS = qq.size();
+        for(int i=0;i<bodyS;i++){
+            int qy = qq.front().y;
+            int qx = qq.front().x;
+            if(qy==yy && qx==xx){
+                check = true;
+                cout << second;
+                return;
+            }
+            qq.pop();
+            SnakeBody snakeB = {qy,qx};
+            qq.push(snakeB);
+        }
     }
-    
+ 
     if(!check){ // 게임 진행
         //사과있는지 check
+        SnakeBody snakeB = {yy,xx};
         if(arr[yy][xx] == 1){
-            arr[yy][xx]++; // 몸커지기
+            arr[yy][xx]=0;
+            qq.push(snakeB);
+        }else{
+            if(!qq.empty()){
+                qq.pop();
+            }
+            qq.push(snakeB);
         }
         // 방향 전환 되는지 확인
         bool ch =false;
         if(!q.empty()){
-            if(second == q.front().sec){
+            int qsec = q.front().sec;
+            char qdir = q.front().dir;
+            if(qsec == second){
+                    q.pop();
                     ch=true;
-                    if(q.front().dir == 'D'){//오른쪽
+                    if(qdir == 'D'){//오른쪽
                         if(type == 1){ // xx++
-                            snake(second+1,++yy,xx,2);
+                            snake(second+1,yy+1,xx,2);
                         }else if(type == 2){ //yy++
-                            snake(second+1,yy,++xx,1);
+                            snake(second+1,yy,xx-1,3);
                         }else if(type == 3){ //xx--
-                            snake(second+1,--yy,xx,4);
+                            snake(second+1,yy-1,xx,4);
                         }else{ //yy--
-                            snake(second+1,yy,++xx,1);
+                            snake(second+1,yy,xx+1,1);
                         }
                     }else{ //왼쪽
                         if(type == 1){ // xx++
-                            snake(second+1,--yy,xx,4);
+                            snake(second+1,yy-1,xx,4);
                         }else if(type == 2){ //yy++
-                            snake(second+1,yy,--xx,3);
+                            snake(second+1,yy,xx+1,1);
                         }else if(type == 3){ //xx--
-                            snake(second+1,++yy,xx,2);
+                            snake(second+1,yy+1,xx,2);
                         }else{ //yy--
-                            snake(second+1,yy,--xx,3);
+                            snake(second+1,yy,xx-1,3);
                         }
                     }
-                    q.pop();
+                 
             }
         }
        
         if(!ch){
             if(type == 1){ // xx++
-                snake(second+1,yy,++xx,1);
+                snake(second+1,yy,xx+1,1);
             }else if(type == 2){ //yy++
-                snake(second+1,++yy,xx,2);
+                snake(second+1,yy+1,xx,2);
             }else if(type == 3){ //xx--
-                snake(second+1,yy,--xx,3);
+                snake(second+1,yy,xx-1,3);
             }else{ //yy--
-                snake(second+1,--yy,xx,4);
+                snake(second+1,yy-1,xx,4);
             }
         }
     }
