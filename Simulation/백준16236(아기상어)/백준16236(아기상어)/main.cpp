@@ -45,6 +45,7 @@ int dx[4]={0,-1,1,0};
 int fishCnt;
 int ch;
 int ch2;
+int ch3;
 int sol;
 int sy,sx;
 
@@ -78,6 +79,7 @@ void shark(){
                 }
             }
         }
+        
         if(ch2==0){
             cout << qsec-1;
             return;
@@ -158,7 +160,7 @@ int main(void) {
                 q.push(coord);
                 sy=i;
                 sx=j;
-            }else if(arr[i][j]>0){
+            }else if(arr[i][j]==1){
                 ch++;
             }
             
