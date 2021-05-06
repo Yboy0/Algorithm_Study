@@ -7,168 +7,169 @@
 
 #include <iostream>
 #include <queue>
-
 using namespace std;
 
+// 상어의 처음크기는 2
+// 1초에 상하좌우로 인접한 한 칸씩 이동
+// 자신의 크기보다 큰 물고기가 있는 칸으로 이동 불가
+// 자신보다 작은 물고기만 먹을 수 있다
+// 크기가 같은 물고기가 있는 칸으로는 이동가능
+// 거리가 가까운 물고기가 많다면 가장 왼쪽, 위에 있는 물고기를 먹는다
+// 물고기 먹으면 그 칸은 0
+// 자신의 크기만큼의 물고기 먹으면 크기가 커짐
 
-
-//m마리 물고기와 아기상어 1마리
-//상어의 크기는 2
-//상어는 상하좌우 인접한 한 칸 씩 이동
-//상어는 자신보다 큰 물고기 있는 칸은 못감
-//상어는 자신보다 작은 물고기만 먹을 수 있음
-// 크기가 같은 물고기는 먹을 수 없지만 그 물고기가 있는 칸은 갈 수 있다
-
-//상어의 이동
-//1. 이동 공간에 먹을 물고기가 없으면 엄마상어 call
-//2. 먹을 수 있는 물고기 1마리면 먹음
-//3. 먹을 수 있는 물고기 1마리보다 많으면, 거리가 가장 가까운 물고기 먹음
-// 물고기 있는 칸으로 이동할 때, 지나는 최소 칸이 거리
-// 가장 왼쪽 위에 있는 물고기 물고기 먹음
-// 물고기를 먹으면 그 칸은 0
-// 자신의 크기와 같은 수의 물고기 먹을 때 마다 크기 1 증가
-// 물고기 다먹을 때까지 걸린 시간 구하기
-
-struct Coord{
-    int y;
-    int x;
-    int second;
-};
-
-int n;
-int arr[21][21];
-int check[21][21];
-int sharkSz=2;
-queue<Coord>q;
-int dy[4] ={-1,0,0,1};
-int dx[4]={0,-1,1,0};
+int n; //칸
+int area[21][21];
+int c;
 int fishCnt;
-int ch;
-int ch2;
-int ch3;
-int sol;
+int canFishCnt;
+int sec;
+int sharkSz=2;
+int eatFishCnt;
+int dy[4]={-1,0,1,0}; //상좌위우
+int dx[4]={0,-1,0,1};
+
 int sy,sx;
 
-queue<Coord>q1;
+queue<pair<int, int>>q;
 
-void shark(){
-    if(ch==0){
-        cout << 0;
+struct ccmp{
+    bool operator()(pair<int, int> &a, pair<int, int> &b){
+        
+//        if(a.second==b.second){
+//            return a.first>b.first;
+//        }
+        return a.first>b.first;
+    }
+};
+
+//크기가 2일 때 먹을 물고기가 아예 없으면 return
+// 판에 먹을 물고기가 없게 되면 종료
+//
+
+
+
+void babyshark(){
+
+    if(canFishCnt==0){ //여기 통과했다면 먹을 수 있는 건 무조건 있다.
         return;
     }
     
-    
-    while(!q.empty()){
-        if(sharkSz == fishCnt){
-            sharkSz++;
-            fishCnt=0;
-        }
+    while(fishCnt>0){
+        area[sy][sx] = 9;
+        q.push(make_pair(sy, sx));
         
-        int qy = q.front().y;
-        int qx = q.front().x;
-        int qsec = q.front().second;
-        q.pop();
+        bool check[21][21];
         
-        
-        
-        ch2=0;
-        for(int i=1;i<=n;i++){
-            for(int j=1;j<=n;j++){
-                if(sharkSz>arr[i][j] && arr[i][j]!=0){
-                    ch2++;
-                }
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                check[i][j]=false;
             }
         }
         
-        if(ch2==0){
-            cout << qsec-1;
-            return;
-        }
+        check[sy][sx]=true;
+        
+        int subSec = sec;
+        bool eatCheck=false;
+        
+        priority_queue<pair<int, int>,vector<pair<int, int>>,ccmp>fishSelectq;
         
         
-        
-        if(sharkSz > arr[qy][qx] && arr[qy][qx]!=0){
+        while(!q.empty()){ // 먹을 물고기 찾으러 가자
             
-            while(!q.empty()){
-                if(qsec==q.front().second && sharkSz >arr[q.front().y][q.front().x]&& arr[q.front().y][q.front().x]!=0){
-                    struct Coord coord = {q.front().y,q.front().x,q.front().second};
-                    q1.push(coord);
-                }
+            if(eatCheck==true){ // 고기를 먹었으면 q비워주고 다시 시작
+                break;
+            }
+            
+            //초기화 되는 지 확인
+            unsigned qSize= q.size();
+            
+            for(unsigned j=0;j<qSize; j++){ //거리 같은 것 중에 최선의 물고기 먹기 위해
+                
+                for(int i=0; i<4; i++){
+                    
+                    int qy=q.front().first+dy[i];
+                    int qx=q.front().second+dx[i];
+                    
+                  
+                    
+                    if(qy>=0 && qx>=0 && qy<n && qx<n){
+                        
+                        if((area[qy][qx]==sharkSz || area[qy][qx]==0) && check[qy][qx]==false){//이동하는 경우
+                            
+                            q.push(make_pair(qy, qx));
+                            check[qy][qx]=true;
+                            
+                        }else if(check[qy][qx]==false && area[qy][qx]>0 && area[qy][qx] < sharkSz ){ //물고기 먹는 경우
+                            fishSelectq.push(make_pair(qy, qx));
+                            check[qy][qx]=true;
+                        }
+                    }
+                }// 먹을 수 있는 물고기 check
                 q.pop();
             }
             
-            while(!q1.empty()){
-                if(q1.front().y<=qy){
-                    if(q1.front().y==qy){
-                        if(q1.front().x<qx){
-                            qy=q1.front().y;
-                            qx=q1.front().x;
-                        }
-                    }else{
-                        qy=q1.front().y;
-                        qx=q1.front().x;
-                    }
-                    
+            subSec++; //1초 경과
+            
+            if(!fishSelectq.empty()){ //먹을 물고기 비교하고 최선의 물고기 먹는다
+                
+                fishCnt--; // 물고기 먹음
+                eatFishCnt++;  //먹은 물고기
+                eatCheck=true;
+                
+                area[sy][sx]=0;
+                
+                sy=fishSelectq.top().first;
+                sx=fishSelectq.top().second;
+                
+                if(eatFishCnt==sharkSz){
+                    sharkSz++;
+                    eatFishCnt=0;
                 }
-                q1.pop();
+                sec = subSec;//확실히 물고기를 먹었을 때 시간 간거 기록
+                
             }
             
-            sol = qsec;
-            arr[qy][qx]=9;
-            arr[sy][sx]=0;
-            
-            fishCnt++;
-            sy=qy;
-            sx=qx;
-            
-            
-            for(int i=1;i<=n;i++){
-                for(int j=1;j<=n;j++){
-                    check[i][j]=false;
-                }
+       
+        } // q비었을 때
+        
+        if(eatCheck){
+            while(!q.empty()){
+                q.pop();
             }
         }
-        
-        for(int i=0; i<4; i++){
-            int y = qy+dy[i];
-            int x = qx+dx[i];
-            
-            if(check[y][x]==false && arr[y][x]!=9 && y>=1 && y<=n && x>=1 && x<=n && arr[y][x]<=sharkSz){
-                check[y][x]=true;
-                Coord coord = {y,x,qsec+1};
-                q.push(coord);
-            }
-        }
-        
-        if(q.empty()){
-            cout << sol;
+
+        if(!eatCheck){ //물고기를 먹지 못했는데 q갸 비어있을 때 계속 찾아다녔는데 판에 먹을 물고기가 없는 경우
             return;
         }
+        
     }
-    
 }
 
 
 int main(void) {
     
     cin >> n;
-    for(int i=1; i<=n; i++){
-        for(int j=1; j<=n; j++){
-            cin >> arr[i][j];
-            if(arr[i][j] == 9){
-                Coord coord = {i,j,0};
-                q.push(coord);
+    
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cin >> c;
+            if(c>0 && c!=9 ){
+                fishCnt++;
+                area[i][j]=c;
+            }else if(c==9){
                 sy=i;
                 sx=j;
-            }else if(arr[i][j]==1){
-                ch++;
             }
             
+            if(c==1){
+                canFishCnt++;
+            }
         }
     }
+    babyshark();
     
-    
-    shark();
+    cout << sec;
     
     return 0;
 }
