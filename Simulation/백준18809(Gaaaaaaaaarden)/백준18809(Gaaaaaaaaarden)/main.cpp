@@ -33,14 +33,6 @@ using namespace std;
 //1: 하얀 칸
 //2: 황토 칸
 
-struct greenRedCh{
-    
-    int y;
-    int x;
-    int color;
-};
-
-
 int n,m; // 정원의 행, 열
 int g; // 녹색 배양액 개수
 int r; // 빨간색 배양액 개수
@@ -49,8 +41,8 @@ int garden[52][52];
 
 //배양액 배치 이용
 vector<pair<int, int>>possibleGarden;
-int gCheck[12];
-int rCheck[12];
+int gCheck[52];
+int rCheck[52];
 vector<pair<int, int>>possibleRgarden;
 vector<pair<int, int>>possibleGgarden;
 // 녹색, 적색 배양액 구별
@@ -78,44 +70,30 @@ void ArrayRmedium(int rCnt, int index){
         
         //정원 복사
         int copyGarden[52][52];
+        
         for(int i=1; i<=n; i++){
             for(int j=1; j<=m; j++){
                 copyGarden[i][j] = garden[i][j];
             }
         }
-        
-        
-        
-        cout << "정원배치:" << endl;
-        for(int i=1; i<=n; i++){
-            for(int j=1; j<=m; j++){
-                cout << copyGarden[i][j] << " ";
-            }
-            cout << endl;
-        }
-        
-        
+
         int subFlower=0;
         queue<pair<int, int>>q;
         
         //녹색 q에 넣는다.
-        cout << "녹색위치:";
         for(unsigned i=0; i<possibleGarden.size(); i++){
             int vy = possibleGarden[i].first;
             int vx = possibleGarden[i].second;
             if(copyGarden[vy][vx]==3){
-                cout << vy << " " << vx << endl;
                 q.push(make_pair(vy, vx));
             }
         }
         
         //적색 q에 넣는다
-        cout << "적색위치:";
         for(unsigned i=0; i<possibleRgarden.size(); i++){
                 int vy = possibleRgarden[i].first;
                 int vx = possibleRgarden[i].second;
             if(copyGarden[vy][vx]==4){
-                cout << vy << " " << vx << endl;
                 q.push(make_pair(vy, vx));
             }
             
@@ -127,9 +105,7 @@ void ArrayRmedium(int rCnt, int index){
             unsigned qSz = q.size();
             
             queue<rgChk>q1; //배양 유발 칸이 뭐였는지 check하기 위해서
-            cout << "같은 타이밍" << endl;
             for(unsigned i=0; i<qSz; i++){
-                cout << "배양된 곳을 보자:" << " " << q.front().first << " " << q.front().second<< endl;
                 for(int j=0; j<4; j++){
                     int qy = q.front().first+dy[j];
                     int qx = q.front().second+dx[j];
@@ -150,21 +126,19 @@ void ArrayRmedium(int rCnt, int index){
                 int qy = q1.front().y;
                 int qx = q1.front().x;
                 int color = q1.front().color;
-   
-                cout << "q1은 뭔가?:"<< endl;
-                
+
                 if((copyGarden[qy][qx]==3 && color==4) || (copyGarden[qy][qx]==4 && color==3)){// 색이 위에서 3또는 4로 바뀌었다면
-                    cout << "꽃이 피었다:" << " " << qy << " " << qx<< endl;
                     subFlower++;
                     copyGarden[qy][qx]=5; // 꽃이 되면 5로 바껴라
-                }else{
-                    cout << qy << " " << qx<< endl;
+                }else if(copyGarden[qy][qx]==1 || copyGarden[qy][qx] == 2){
                     if(color==3){
                         copyGarden[qy][qx]=3;
-                    }else{
+                        q.push(make_pair(qy, qx));
+                    }else if(color==4){
                         copyGarden[qy][qx]=4;
+                        q.push(make_pair(qy, qx));
                     }
-                    q.push(make_pair(qy, qx));
+                   
                 }
                 
                 q1.pop();
@@ -172,7 +146,7 @@ void ArrayRmedium(int rCnt, int index){
 
         } //q가 비었을 때
         
-        
+    
         if(subFlower>resultFlower){
             resultFlower=subFlower;
         }
@@ -190,7 +164,7 @@ void ArrayRmedium(int rCnt, int index){
                 garden[vy][vx] = 4;
                 ArrayRmedium(rCnt+1,i+1);
                 rCheck[i]=false;
-                garden[vy][vx] = 1;
+                garden[vy][vx] = 2;
             }
         }
     }
@@ -201,8 +175,6 @@ void ArrayRmedium(int rCnt, int index){
 void Arraymedium(int gCnt, int index){
     
     if(gCnt==g){
-        // 녹색 배양액 배치가 완료됐다면 적색 배양액 배치
-        
         //적색 가능 벡터 초기화
         while (possibleRgarden.size()>0) {
             possibleRgarden.pop_back();
@@ -225,7 +197,7 @@ void Arraymedium(int gCnt, int index){
             rCheck[i]=true;
             ArrayRmedium(1,i+1);
             rCheck[i]=false;
-            garden[vy][vx] = 1;
+            garden[vy][vx] = 2;
         }
         
         return;
@@ -241,7 +213,7 @@ void Arraymedium(int gCnt, int index){
                 garden[vy][vx] = 3;
                 Arraymedium(gCnt+1,i+1);
                 gCheck[i]=false;
-                garden[vy][vx] = 1;
+                garden[vy][vx] = 2;
             }
         }
     }
@@ -256,15 +228,15 @@ int main(void) {
     for(int i=1; i<=n; i++){
         for(int j=1; j<=m; j++){
             cin >> garden[i][j];
-            if(garden[i][j]==1){ //황토 칸이면 배양액 가능한 벡터에 넣는다
+            if(garden[i][j]==2){ //황토 칸이면 배양액 가능한 벡터에 넣는다
                 possibleGarden.push_back(make_pair(i, j));
             }
         }
     }
     
+
     
     //초기 배양액(녹,적색) setting
-    
     //녹색 배양액 부터 setting
     //녹색이면 3으로
     //적색이면 4로
@@ -276,7 +248,7 @@ int main(void) {
         gCheck[i]=true;
         Arraymedium(1,i+1);
         gCheck[i]=false;
-        garden[vy][vx] = 1;
+        garden[vy][vx] = 2;
     }
     
     
