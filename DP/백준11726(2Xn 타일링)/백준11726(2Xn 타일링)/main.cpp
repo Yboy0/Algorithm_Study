@@ -8,8 +8,6 @@
 #include <iostream>
 using namespace std;
 
-// 2Xn 크기의 직사각형을 1X2, 2X1 타일로 채우는 방법의 수를 구하시오.
-
 int n;
 long long result1=1;
 long long result2=2;
@@ -29,7 +27,6 @@ void tile(int num){
         
     }
 }
-
 
 int main(void) {
     cin >>n;
